@@ -12,14 +12,20 @@ type interval struct {
 
 func main() {
 	var input = []interval{newInterval(25, 30), newInterval(2, 19), newInterval(14, 23), newInterval(4, 8)}
-	output := mergeSort(input)
-	log.Print(fmt.Sprintf("input: %s", output))
+	output := MergeSort(input)
+
+	MergeInterval(output)
+}
+
+// MergeInterval that merges overlapping interval
+func MergeInterval(output []interval) []interval {
+	var result = make([]interval, 0)
 
 	low := output[0].Low
 	high := output[0].High
-	for i := 0; i < len(input); i++ {
+	for i := 0; i < len(output); i++ {
 		// check if it is end of list
-		if i+1 < len(input) {
+		if i+1 < len(output) {
 			// next interval overlaps current interval
 			if output[i+1].Low < high {
 				if output[i+1].High > high {
@@ -27,17 +33,21 @@ func main() {
 				}
 			} else {
 				// use next interval
+				result = append(result, newInterval(low, high))
 				log.Print(fmt.Sprintf("[%d,%d]", low, high))
 				low = output[i+1].Low
 				high = output[i+1].High
 			}
 		}
 	}
+	result = append(result, newInterval(low, high))
 	log.Print(fmt.Sprintf("[%d,%d]", low, high))
+
+	return result
 }
 
-//simple divide and conquer sort
-func mergeSort(input []interval) []interval {
+//MergeSort simple divide and conquer sort
+func MergeSort(input []interval) []interval {
 	length := len(input)
 	if length == 1 {
 		return input
@@ -55,7 +65,7 @@ func mergeSort(input []interval) []interval {
 		}
 	}
 
-	return merge(mergeSort(left), mergeSort(right))
+	return merge(MergeSort(left), MergeSort(right))
 }
 
 func merge(left, right []interval) (result []interval) {
